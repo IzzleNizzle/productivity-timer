@@ -1,3 +1,31 @@
 body {
     margin-top: 55px;
 }
+
+
+/* 640x960 iphone 4 dimensions */
+
+#timer {
+    border: solid 1px blue; 
+    width: 200px;
+    height: 200px;
+    border-radius: 150px;
+    text-align: center;
+}
+
+p {
+    margin-top: 19px;
+}
+
+.time {
+    font-weight: bold;
+    font-size: 20px;
+}
+/* 
+
+- Goal _______  Submit
+
+
+
+
+*/
