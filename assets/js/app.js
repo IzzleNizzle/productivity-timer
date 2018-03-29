@@ -124,14 +124,10 @@ var stopwatch = {
 
     //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
     let hours = Math.floor(t / 3600);
-    let minutes = t - (hours * 12);
-    // var minutes = Math.floor(t / 60);
-    var seconds = t - (minutes * 60);
-    // let hours = Math.floor(minutes / 60);
-
-    // Default settings
-    // var minutes = Math.floor(t / 60);
-    // var seconds = t - (minutes * 60);
+    let newNumber = t - (hours * 60 * 60);
+    var minutes = Math.floor(newNumber / 60);
+    
+    var seconds = newNumber - (minutes * 60);
 
     if (seconds < 10) {
       seconds = "0" + seconds;
@@ -153,7 +149,8 @@ var stopwatch = {
     else if (hours < 10) {
       hours = "0" + hours;
     }
-
+    console.log(seconds, minutes, hours);
+    
     return hours + `:` + minutes + ":" + seconds;
   }
 };
