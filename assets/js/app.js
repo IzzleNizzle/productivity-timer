@@ -78,3 +78,108 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 
 
 // **************************** END USER AUTHENTICATION ********************************
+
+$("#time").on("click", function() {
+  $(`#time`).css('border', 'green 5px solid')
+})
+
+
+
+
+
+// Importing timer object
+var clockRunning = false;
+
+// Create a timer for the game to run by
+var stopwatch = {
+  time: 0,
+  reset: function () {
+    // Stop's timer and sets time to zero, as well as prints beginning to the page
+    stopwatch.stop();
+    stopwatch.time = 0;
+    $('#time').text("00:00:00");
+  },
+  start: function () {
+    //  Use setInterval to start the count here and set the clock to running.
+    if (!clockRunning) {
+      intervalId = setInterval(stopwatch.count, 1000);
+      clockRunning = true;
+      $('#time').text("00:00:00");
+    }
+  },
+  stop: function () {
+    //  Use clearInterval to stop the count here and set the clock to not be running.
+    clearInterval(intervalId);
+    clockRunning = false;
+  },
+  count: function () {
+    
+      stopwatch.time++;
+      // TODO - assign time to firebase database for network storage.
+      var var2 = stopwatch.timeConverter(stopwatch.time);
+      $('#time').text(var2);
+    
+  },
+  timeConverter: function (t) {
+
+    //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
+    let hours = Math.floor(t / 3600);
+    let minutes = t - (hours * 12);
+    // var minutes = Math.floor(t / 60);
+    var seconds = t - (minutes * 60);
+    // let hours = Math.floor(minutes / 60);
+
+    // Default settings
+    // var minutes = Math.floor(t / 60);
+    // var seconds = t - (minutes * 60);
+
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
+
+    if (minutes === 0) {
+      minutes = "00";
+    }
+
+        
+    else if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    if (hours === 0) {
+      hours = "00";
+    }
+
+    else if (hours < 10) {
+      hours = "0" + hours;
+    }
+
+    return hours + `:` + minutes + ":" + seconds;
+  }
+};
+
+
+
+stopwatch.start();
+
+// TO-Do's
+
+// input for wage. 
+
+// start button
+
+// be able to see total made and also rate per second per minute etc
+
+// every second see it add up into a bucket showing todays total.
+// maybe database with much more history etc.
+
+
+
+
+
+
+
+
+
+
+
