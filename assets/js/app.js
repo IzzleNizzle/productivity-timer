@@ -53,6 +53,7 @@ $("#btnSignUp").on("click", function () {
 $("#btnLogOut").on("click", function () {
   // Sign out 
   firebase.auth().signOut();
+  user = null;
   console.log("test");
 });
 
@@ -68,6 +69,29 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
     // console.log(firebaseUser.Kb.I)
     logOut.classList.remove("hide");
     $("#userName").text("Hi " + firebaseUser.email + "!");
+
+    // listener for data
+// firebase.database().ref('/users/' + user.uid).on('value', function (snapshot) {
+//   console.log(snapshot.val() + " wizard");
+// });
+
+
+db.ref('/users/' + user.uid).orderByChild("dateAdded").on("child_added", function(snapshot) {
+  var sv = snapshot.val();
+
+  console.log(sv.dateAdded + `this is sa test`);
+})
+
+
+
+
+
+
+
+
+
+
+
   } else {
     console.log('not logged in');
     console.log(firebaseUser)
@@ -79,9 +103,178 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 
 // **************************** END USER AUTHENTICATION ********************************
 
-$("#time").on("click", function() {
-  $(`#time`).css('border', 'green 5px solid')
+$("#timer").on("click", function() {
+  $(`#timer`).css('border', 'green 5px solid')
 })
+
+// Modal Button Functionality for adding Project
+$("#projectSubmit").on('click', function(){
+  event.preventDefault();
+  // capture input from  user
+  let projectName = $('#projectName').val().trim();
+  
+
+
+  if (user === null || user == undefined){
+    console.log("noone is logged in to store data for");
+  } else {
+ 
+   
+ db.ref("users/" + user.uid).push({
+   projectName: projectName,
+   dateAdded: firebase.database.ServerValue.TIMESTAMP
+ })
+ 
+ 
+ 
+ 
+  }
+
+  // setting timer variables to firebase server
+  // variables include
+  // name
+  // username of owner
+  // time will be handled in stopwatch object
+  // one time pull of totaltime
+  // time will push new objects every day
+  
+
+  // db.ref("users/" + user.uid).push({
+  //   projectName: projectName,
+  //   dateAdded: firebase.database.ServerValue.TIMESTAMP
+  // })
+
+})
+
+
+
+
+// playing with firebase database handling
+
+$("#accountSubmit").on("click", function (){
+
+//  if (user === null || user == undefined){
+//    console.log("noone is logged in to store data for");
+//  } else {
+
+  
+// db.ref("users/" + user.uid).push({
+//   projectName: projectName,
+//   dateAdded: firebase.database.ServerValue.TIMESTAMP
+// })
+
+
+
+
+//  }
+  
+
+
+})
+
+// Here is the structure I'm going to use for storing the data to our warehouse
+// setting user id
+//var userId = firebase.auth().currentUser.uid;
+// set data
+//firebase.database().ref('users/' + userId).set({
+    //username: "name",
+    //email: "email",
+    //profile_picture: "imageUrl"
+//});
+
+
+// changing some data
+//var updates = {};
+//updates['/users/moGczXfHVRc6S8WvKeBRne7NN6o2/email'] = "testemail";
+//firebase.database().ref().update(updates);
+
+
+
+// listener for data
+//firebase.database().ref('/users/' + userId + '/email').on('value', function (snapshot) {
+  //  console.log(snapshot.val() + " wizard");
+//});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -157,26 +350,18 @@ var stopwatch = {
 
 
 
-stopwatch.start();
+// stopwatch.start();
 
 // TO-Do's
-
-// input for wage. 
-
-// start button
-
-// be able to see total made and also rate per second per minute etc
-
-// every second see it add up into a bucket showing todays total.
-// maybe database with much more history etc.
+// every second save time to firebase for network storage
+  // save second variable, link it to the day that you started the timer
+  // be able to work with multiple days and count the total time for timer
 
 
 
 
 
 
-
-
-
-
-
+// add functionality for add project button for naming and such
+// on click function that starts timer and stops it as well
+// network listener looks for project opened by user and pulls time if they have a project.

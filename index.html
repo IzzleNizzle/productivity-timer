@@ -63,6 +63,7 @@
             
             <div class="col-md-6">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add Project</button>
+                <button class="btn btn-secondary" id='accountSubmit'>Testing</button>
 
 
 
@@ -82,10 +83,10 @@
                       <div class="modal-body">
                             <form>
                                 Add Project Name:<br>
-                                <input type="text" name="projectName" placeholder="Enter Name Here">
+                                <input type="text" name="projectName" placeholder="Enter Name Here" id='projectName'>
                                       
                                 <br><br>
-                                <input type="submit" value="Create Timer">
+                                <input type="submit" value="Create Timer" id='projectSubmit' data-dismiss="modal">
                               </form> 
                       </div>
                       <div class="modal-footer">
@@ -109,6 +110,8 @@
 
     <!-- Adding google's firebase -->
     <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+    <!-- Link to Moment.js -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
     <!-- Bootstrap core JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
