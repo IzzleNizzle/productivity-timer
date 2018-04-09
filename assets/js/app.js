@@ -57,6 +57,34 @@ $("#btnLogOut").on("click", function () {
   console.log("test");
 });
 
+//creating a function to build new timers to the page
+function newTimer (name) {
+  
+  // pieces of the timer object
+  var timeObject = $('<div>');
+  var timeName = $('<p>' + name + '</p>');
+  var time = $('<p>00:00:00</p>');
+  var totTime = $('<p>Total Time: 00:00:00</p>');
+  var startButton = $('<button class="btn btn-primary">Start</button>');
+  var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
+
+  // appending pieces together
+
+  timeObject.append(timeName);
+  timeObject.append(time);
+  timeObject.append(totTime);
+  timeObject.append(startButton);
+  timeObject.append(pauseButton);
+
+  return timeObject;
+
+}
+
+//testing function
+$('#timer-fill').prepend(newTimer('billyjoe'));
+
+
+
 
 // Add a reatime listener
 firebase.auth().onAuthStateChanged(firebaseUser => {
