@@ -76,10 +76,13 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 // });
 
 
+// TODO - this is pulling data from teh database just fine. for every project that is in the database we need to load a new timer in the paused status and append it to the screen. ordered by date added is just fine
+
 db.ref('/users/' + user.uid).orderByChild("dateAdded").on("child_added", function(snapshot) {
   var sv = snapshot.val();
 
-  console.log(sv.dateAdded + `this is sa test`);
+  console.log(sv.dateAdded + `date`);
+  console.log(sv.projectName + ` name`);
 })
 
 
@@ -119,7 +122,7 @@ $("#projectSubmit").on('click', function(){
     console.log("noone is logged in to store data for");
   } else {
  
-   
+ // a good example of pushing data to the database  
  db.ref("users/" + user.uid).push({
    projectName: projectName,
    dateAdded: firebase.database.ServerValue.TIMESTAMP
@@ -145,7 +148,6 @@ $("#projectSubmit").on('click', function(){
   // })
 
 })
-
 
 
 
@@ -348,14 +350,10 @@ var stopwatch = {
   }
 };
 
-
-
-// stopwatch.start();
-
 // TO-Do's
 // every second save time to firebase for network storage
-  // save second variable, link it to the day that you started the timer
-  // be able to work with multiple days and count the total time for timer
+// save second variable, link it to the day that you started the timer
+// be able to work with multiple days and count the total time for timer
 
 
 
