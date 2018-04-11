@@ -11,7 +11,8 @@ firebase.initializeApp(config);
 //shortcut reference for firebase database
 var db = firebase.database();
 
-
+// storing my is as a variable because i can't figure out cors issue
+var myID = "VspYPh88CaSLRA9J4MnftYJZeY23";
 
 // **************************** USER AUTHENTICATION ********************************
 
@@ -58,6 +59,7 @@ $("#btnLogOut").on("click", function () {
 });
 
 //creating a function to build new timers to the page
+//TODO - build in functionality for a key, so that this object can be referenced by the key in teh database object.
 function newTimer (name) {
   
   // pieces of the timer object
@@ -93,20 +95,19 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
     console.log(firebaseUser)
     console.log("is this working?")
     console.log(firebaseUser.email)
-    console.log(firebaseUser.uid)
     // console.log(firebaseUser.Kb.I)
     logOut.classList.remove("hide");
     $("#userName").text("Hi " + firebaseUser.email + "!");
 
     // listener for data
-// firebase.database().ref('/users/' + user.uid).on('value', function (snapshot) {
+// firebase.database().ref('/users/' + myID).on('value', function (snapshot) {
 //   console.log(snapshot.val() + " wizard");
 // });
 
 
 // TODO - this is pulling data from teh database just fine. for every project that is in the database we need to load a new timer in the paused status and append it to the screen. ordered by date added is just fine
 
-db.ref('/users/' + user.uid).orderByChild("dateAdded").on("child_added", function(snapshot) {
+db.ref('/users/' + myID).orderByChild("dateAdded").on("child_added", function(snapshot) {
   var sv = snapshot.val();
 
   console.log(sv.dateAdded + `date`);
@@ -146,20 +147,55 @@ $("#projectSubmit").on('click', function(){
   
 
 
-  if (user === null || user == undefined){
-    console.log("noone is logged in to store data for");
-  } else {
+  // if (user === null || user == undefined){
+  //   console.log("noone is logged in to store data for");
+  // } else {
  
+    var newPostKey = firebase.database().ref().child(myID).push().key;
+  console.log(newPostKey);
+
  // a good example of pushing data to the database  
- db.ref("users/" + user.uid).push({
+ db.ref("users/" + myID).push({
    projectName: projectName,
+   time: 0,
+   key: newPostKey,
    dateAdded: firebase.database.ServerValue.TIMESTAMP
  })
  
+    // 04-11-18 next thing i need to be able to do is to update this data and to be able to filter current time objects by key
  
+
+    var updates = {};
+    updates['/users/' + myID + "/-L9r-OpNLpxTDuaVTGh0" + "/time"] = 19;
+    // updates['/user-posts/' + uid + '/' + newPostKey] = postData;
+
+    firebase.database().ref().update(updates);
+
+
+// how to find specific timer object
+
+
+// currently my database is built like this. i have a pool of data that i keep just pushing new objects into, which can be organized by most recent. however this becomes inconvenient when trying to update information because it's hard to point at objects.
+
+// to fix this i'm going to create a section for timers like this
+
+// users/timers/
+
+// then when a new timer is created it will set data for that like this
+
+// users/timers/key-token
+
+// then inside of that there will be the json object which contains all o the goodies.
+
+// this will then make available the option to save the key-token to the html object when it is created, and then when the timer is clicked or whatever we can reference the corect timer object in the database.
+
+
+
+
+
+
  
- 
-  }
+  // }
 
   // setting timer variables to firebase server
   // variables include
@@ -170,7 +206,7 @@ $("#projectSubmit").on('click', function(){
   // time will push new objects every day
   
 
-  // db.ref("users/" + user.uid).push({
+  // db.ref("users/" + myID).push({
   //   projectName: projectName,
   //   dateAdded: firebase.database.ServerValue.TIMESTAMP
   // })
@@ -188,7 +224,7 @@ $("#accountSubmit").on("click", function (){
 //  } else {
 
   
-// db.ref("users/" + user.uid).push({
+// db.ref("users/" + myID).push({
 //   projectName: projectName,
 //   dateAdded: firebase.database.ServerValue.TIMESTAMP
 // })
@@ -204,7 +240,7 @@ $("#accountSubmit").on("click", function (){
 
 // Here is the structure I'm going to use for storing the data to our warehouse
 // setting user id
-//var userId = firebase.auth().currentUser.uid;
+//var userId = firebase.auth().currentmyID;
 // set data
 //firebase.database().ref('users/' + userId).set({
     //username: "name",
