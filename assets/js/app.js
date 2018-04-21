@@ -146,25 +146,88 @@ function firebaseTest() {
     // Variable to store response from database
     var sv = snapshot.val();
 
+<<<<<<< HEAD
     // console.log(JSON.stringify(sv.key) + 'reading database test');
     // console.log(sv.key + ' key');
 
 
 
   });
+=======
+  // console.log(JSON.stringify(sv.key) + 'reading database test');
+  // console.log(sv.dateAdded + ' reading by key database test');
+  console.log(sv.projectName + ' reading by key database test');
+  // console.log(sv.key + ' key');
+  
 
 
-
-
-
+});
+shaleyIsHot()
   //thirdly i need to be able to update and point to a particular timer object
+>>>>>>> aab1f04012bda3d65caa6b456102f16caaed6fda
+
+
+
+
+
+
+// // create listener to catch changes in the database
+// db.ref('/user-timers/' + myID + '/').orderByKey().on("child_added", function(snapshot) {
+//   // Variable to store response from database
+//   var sv = snapshot.val();
+
+//   // console.log(JSON.stringify(sv.key) + 'reading database test');
+//   console.log(sv.dateAdded + ' reading by key database test');
+//   console.log(sv.projectName + ' reading by key database test');
+//   // console.log(sv.key + ' key');
+  
+
+
+// });
+
+// console.log('test1');
+
+
+// //if i wanted to reference one object in particular;
+// db.ref('/user-timers/' + myID + '/-L9wekAncJCnOJnyuvaZ').on("child_added", function(snapshot) {
+//   // Variable to store response from database
+//   var sv = snapshot.val();
+
+//   console.log(sv + ' single object test');
+//   // console.log(sv.key + ' key');
+  
+
+
+// });
+
+
+// console.log('test2');
+
+
+
+
 
 
 
 
 }
 
+function shaleyIsHot() {
 
+  setTimeout(() => {
+      var adaNameRef = firebase.database().ref('/user-timers/' + myID + '/-L9wnwUZgQ4WxDwzwkex');
+
+  adaNameRef.update({projectName: 'Jonny got his whistle!'});
+
+
+
+
+  }, 1200);
+
+
+
+
+}
 
 
 
