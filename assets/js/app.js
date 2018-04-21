@@ -58,33 +58,6 @@ $("#btnLogOut").on("click", function () {
   console.log("test");
 });
 
-//creating a function to build new timers to the page
-//TODO - build in functionality for a key, so that this object can be referenced by the key in teh database object.
-function newTimer(name) {
-
-  // pieces of the timer object
-  var timeObject = $('<div>');
-  var timeName = $('<p>' + name + '</p>');
-  var time = $('<p>00:00:00</p>');
-  var totTime = $('<p>Total Time: 00:00:00</p>');
-  var startButton = $('<button class="btn btn-primary">Start</button>');
-  var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
-
-  // appending pieces together
-
-  timeObject.append(timeName);
-  timeObject.append(time);
-  timeObject.append(totTime);
-  timeObject.append(startButton);
-  timeObject.append(pauseButton);
-
-  return timeObject;
-
-}
-
-//testing function
-$('#timer-fill').prepend(newTimer('billyjoe'));
-
 
 
 
@@ -136,9 +109,9 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 
 // **************************** END USER AUTHENTICATION ********************************
 
-$("#timer").on("click", function () {
-  $(`#timer`).css('border', 'green 5px solid')
-})
+// $("#timer").on("click", function () {
+//   $(`#timer`).css('border', 'green 5px solid')
+// })
 
 
 function firebaseTest() {
@@ -168,17 +141,17 @@ function firebaseTest() {
 
   //secondly i'm going to need to read from the database
 
-// create listener to catch changes in the database
-db.ref('/user-timers/' + myID + '/').orderByChild('dateAdded').on("child_added", function(snapshot) {
-  // Variable to store response from database
-  var sv = snapshot.val();
+  // create listener to catch changes in the database
+  db.ref('/user-timers/' + myID + '/').orderByChild('dateAdded').on("child_added", function (snapshot) {
+    // Variable to store response from database
+    var sv = snapshot.val();
 
-  console.log(JSON.stringify(sv.key) + 'reading database test');
-  // console.log(sv.key + ' key');
-  
+    // console.log(JSON.stringify(sv.key) + 'reading database test');
+    // console.log(sv.key + ' key');
 
 
-});
+
+  });
 
 
 
@@ -211,7 +184,8 @@ $("#projectSubmit").on('click', function () {
   event.preventDefault();
   // capture input from  user
   let projectName = $('#projectName').val().trim();
-
+  // create new timer unit with function
+  newTimer(projectName);
 
 
   // if (user === null || user == undefined){
@@ -219,15 +193,15 @@ $("#projectSubmit").on('click', function () {
   // } else {
 
 
-  console.log(newPostKey);
+  // console.log(newPostKey);
 
-  // a good example of pushing data to the database  
-  db.ref("users/" + myID).push({
-    projectName: projectName,
-    time: 0,
-    key: newPostKey,
-    dateAdded: firebase.database.ServerValue.TIMESTAMP
-  })
+  // // a good example of pushing data to the database  
+  // db.ref("users/" + myID).push({
+  //   projectName: projectName,
+  //   time: 0,
+  //   key: newPostKey,
+  //   dateAdded: firebase.database.ServerValue.TIMESTAMP
+  // })
 
   // 04-11-18 next thing i need to be able to do is to update this data and to be able to filter current time objects by key
 
@@ -338,13 +312,49 @@ $("#accountSubmit").on("click", function () {
 
 
 
+$('#start-button').on('click', function () {
+
+  stopwatch.start();
+
+});
+
+
+$('#pause-button').on('click', function () {
+
+  stopwatch.stop();
+
+});
 
 
 
 
+//creating a function to build new timers to the page
+//TODO - build in functionality for a key, so that this object can be referenced by the key in teh database object.
+function newTimer(name) {
 
+  // pieces of the timer object
+  var timeObject = $('<div>');
+  var timeName = $('<p>' + name + '</p>');
+  var time = $('<p>00:00:00</p>');
+  var totTime = $('<p>Total Time: 00:00:00</p>');
+  var startButton = $('<button class="btn btn-primary">Start</button>');
+  var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
 
+  // appending pieces together
 
+  timeObject.append(timeName);
+  timeObject.append(time);
+  timeObject.append(totTime);
+  timeObject.append(startButton);
+  timeObject.append(pauseButton);
+
+  // return timeObject;
+  $('#timer-fill').append(timeObject);
+
+}
+
+// //testing function
+// $('#timer-fill').prepend(newTimer('billyjoe'));
 
 
 
@@ -435,7 +445,6 @@ var stopwatch = {
     if (!clockRunning) {
       intervalId = setInterval(stopwatch.count, 1000);
       clockRunning = true;
-      $('#time').text("00:00:00");
     }
   },
   stop: function () {
