@@ -643,7 +643,7 @@ var stopwatch = {
 
 
 
-    // console.log(dTime, uid, tKey);
+    // move this stopwatch time conver to the call to get the current number in the database and print this to the page
 
 
     stopwatch.time++;
