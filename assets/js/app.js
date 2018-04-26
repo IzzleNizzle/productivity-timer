@@ -99,7 +99,7 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 
   } else {
     console.log('not logged in');
-    firebaseTest();
+    // firebaseTest();
     // console.log(firebaseUser)
     logOut.classList.add("hide");
     $("#userName").html("<a href='sign-in.html'>Hi! Click to Log In</a>");
@@ -146,62 +146,53 @@ function firebaseTest() {
     // Variable to store response from database
     var sv = snapshot.val();
 
-<<<<<<< HEAD
     // console.log(JSON.stringify(sv.key) + 'reading database test');
+    // console.log(sv.dateAdded + ' reading by key database test');
+    console.log(sv.projectName + ' reading by key database test');
     // console.log(sv.key + ' key');
 
 
 
   });
-=======
-  // console.log(JSON.stringify(sv.key) + 'reading database test');
-  // console.log(sv.dateAdded + ' reading by key database test');
-  console.log(sv.projectName + ' reading by key database test');
-  // console.log(sv.key + ' key');
-  
-
-
-});
-shaleyIsHot()
+  shaleyIsHot()
   //thirdly i need to be able to update and point to a particular timer object
->>>>>>> aab1f04012bda3d65caa6b456102f16caaed6fda
 
 
 
 
 
 
-// // create listener to catch changes in the database
-// db.ref('/user-timers/' + myID + '/').orderByKey().on("child_added", function(snapshot) {
-//   // Variable to store response from database
-//   var sv = snapshot.val();
+  // // create listener to catch changes in the database
+  // db.ref('/user-timers/' + myID + '/').orderByKey().on("child_added", function(snapshot) {
+  //   // Variable to store response from database
+  //   var sv = snapshot.val();
 
-//   // console.log(JSON.stringify(sv.key) + 'reading database test');
-//   console.log(sv.dateAdded + ' reading by key database test');
-//   console.log(sv.projectName + ' reading by key database test');
-//   // console.log(sv.key + ' key');
-  
-
-
-// });
-
-// console.log('test1');
+  //   // console.log(JSON.stringify(sv.key) + 'reading database test');
+  //   console.log(sv.dateAdded + ' reading by key database test');
+  //   console.log(sv.projectName + ' reading by key database test');
+  //   // console.log(sv.key + ' key');
 
 
-// //if i wanted to reference one object in particular;
-// db.ref('/user-timers/' + myID + '/-L9wekAncJCnOJnyuvaZ').on("child_added", function(snapshot) {
-//   // Variable to store response from database
-//   var sv = snapshot.val();
 
-//   console.log(sv + ' single object test');
-//   // console.log(sv.key + ' key');
-  
+  // });
+
+  // console.log('test1');
 
 
-// });
+  // //if i wanted to reference one object in particular;
+  // db.ref('/user-timers/' + myID + '/-L9wekAncJCnOJnyuvaZ').on("child_added", function(snapshot) {
+  //   // Variable to store response from database
+  //   var sv = snapshot.val();
+
+  //   console.log(sv + ' single object test');
+  //   // console.log(sv.key + ' key');
 
 
-// console.log('test2');
+
+  // });
+
+
+  // console.log('test2');
 
 
 
@@ -215,9 +206,9 @@ shaleyIsHot()
 function shaleyIsHot() {
 
   setTimeout(() => {
-      var adaNameRef = firebase.database().ref('/user-timers/' + myID + '/-L9wnwUZgQ4WxDwzwkex');
+    var adaNameRef = firebase.database().ref('/user-timers/' + myID + '/-L9wnwUZgQ4WxDwzwkex');
 
-  adaNameRef.update({projectName: 'Jonny got his whistle!'});
+    adaNameRef.update({ projectName: 'Jonny got his whistle!' });
 
 
 
@@ -375,20 +366,6 @@ $("#accountSubmit").on("click", function () {
 
 
 
-$('#start-button').on('click', function () {
-
-  stopwatch.start();
-
-});
-
-
-$('#pause-button').on('click', function () {
-
-  stopwatch.stop();
-
-});
-
-
 
 
 //creating a function to build new timers to the page
@@ -403,6 +380,13 @@ function newTimer(name) {
   var startButton = $('<button class="btn btn-primary">Start</button>');
   var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
 
+  //giving timer data attribute with key so it can be unique to the database item
+  var newPostKey = firebase.database().ref().push().key;
+
+  startButton.attr('data-attr', newPostKey);
+  startButton.addClass('startBtn');
+  pauseButton.addClass('pauseBtn');
+
   // appending pieces together
 
   timeObject.append(timeName);
@@ -411,10 +395,33 @@ function newTimer(name) {
   timeObject.append(startButton);
   timeObject.append(pauseButton);
 
-  // return timeObject;
+  //create database item for the timer
+  createTimer(newPostKey, name)
+  // print timeObject to page;
   $('#timer-fill').append(timeObject);
+  clickThis();
+}
+
+//testing button THIS functionality
+function clickThis() {
+  $('.startBtn').on('click', function () {
+    console.log($(this).attr('data-attr'));
+    console.log('test');
+
+
+  })
+
+  //TODO FUNCTIONALITY FOR PAUSE BUTTON
+  // $('.pauseBtn').on('click', function() {
+  //   console.log($(this).attr('data-attr'));
+  //   console.log('test');
+
+
+  // })
 
 }
+
+
 
 // //testing function
 // $('#timer-fill').prepend(newTimer('billyjoe'));
@@ -423,6 +430,92 @@ function newTimer(name) {
 
 
 
+function createTimer(postKey, timerName) {
+
+  //first thing is to write data
+
+  // update it by referencing the key
+
+  var newTimer = {
+    time: 0,
+    projectName: timerName,
+    key: postKey,
+    dateAdded: firebase.database.ServerValue.TIMESTAMP
+  };
+
+
+  // this test will be called after the auth checks if there is a user
+
+  // Write the new post's data simultaneously in the posts list and the user's post list.
+  var updates = {};
+  // updates['/timers/' + postKey] = newTimer;
+  updates['/user-timers/' + myID + '/' + postKey] = newTimer;
+
+  firebase.database().ref().update(updates);
+
+
+  //   //secondly i'm going to need to read from the database
+
+  //   // create listener to catch changes in the database
+  //   db.ref('/user-timers/' + myID + '/').orderByChild('dateAdded').on("child_added", function (snapshot) {
+  //     // Variable to store response from database
+  //     var sv = snapshot.val();
+
+  //   // console.log(JSON.stringify(sv.key) + 'reading database test');
+  //   // console.log(sv.dateAdded + ' reading by key database test');
+  //   console.log(sv.projectName + ' reading by key database test');
+  //   // console.log(sv.key + ' key');
+
+
+
+  // });
+  //thirdly i need to be able to update and point to a particular timer object
+
+
+
+
+
+
+  // // create listener to catch changes in the database
+  // db.ref('/user-timers/' + myID + '/').orderByKey().on("child_added", function(snapshot) {
+  //   // Variable to store response from database
+  //   var sv = snapshot.val();
+
+  //   // console.log(JSON.stringify(sv.key) + 'reading database test');
+  //   console.log(sv.dateAdded + ' reading by key database test');
+  //   console.log(sv.projectName + ' reading by key database test');
+  //   // console.log(sv.key + ' key');
+
+
+
+  // });
+
+  // console.log('test1');
+
+
+  // //if i wanted to reference one object in particular;
+  // db.ref('/user-timers/' + myID + '/-L9wekAncJCnOJnyuvaZ').on("child_added", function(snapshot) {
+  //   // Variable to store response from database
+  //   var sv = snapshot.val();
+
+  //   console.log(sv + ' single object test');
+  //   // console.log(sv.key + ' key');
+
+
+
+  // });
+
+
+  // console.log('test2');
+
+
+
+
+
+
+
+
+}
 
 
 
@@ -476,6 +569,19 @@ function newTimer(name) {
 
 
 
+
+$('.btn').on('click', function () {
+
+  stopwatch.start();
+
+});
+
+
+$('#pause-button').on('click', function () {
+
+  stopwatch.stop();
+
+});
 
 
 
@@ -516,6 +622,29 @@ var stopwatch = {
     clockRunning = false;
   },
   count: function () {
+
+    // in order for this to work, we need current database time, user id and timer key
+
+    // current database time;
+    firebase.database().ref('user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB-CsSsAvO-XdOg0vXr/time').once('value').then(function (snapshot) {
+      var timey = parseFloat(JSON.stringify(snapshot));
+      timey++;
+      
+      // updating firebase data
+      var updates = {};
+      updates['/user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB-CsSsAvO-XdOg0vXr/time'] = timey;
+      firebase.database().ref().update(updates);
+
+
+
+
+
+    });
+
+
+
+    // console.log(dTime, uid, tKey);
+
 
     stopwatch.time++;
     // TODO - assign time to firebase database for network storage.
