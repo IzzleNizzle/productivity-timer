@@ -570,9 +570,9 @@ function createTimer(postKey, timerName) {
 
 
 
-$('.btn').on('click', function () {
+$('#start-button').on('click', function () {
 
-  stopwatch.start();
+  var newTimer = new Stopwatch(0, myID, $(this).attr('data-attr'));
 
 });
 
@@ -589,7 +589,66 @@ $('#pause-button').on('click', function () {
 
 
 
+function Stopwatch (time, uid, key) {
+  this.clickRunning = false,
+  this.time = time,
+  this.reset = function () {
+    this.stop();
+    this.time = 0;
+    $('#' + key).text("00:00:00");
+  },
+  this.start = function () {
+    //  Use setInterval to start the count here and set the clock to running.
+    if (!this.clockRunning) {
+      intervalId = setInterval( this.count(), 1000);
+      this.clockRunning = true;
+      console.log('start function');
+      
+    }
+  },
+  this.stop = function () {
+    //  Use clearInterval to stop the count here and set the clock to not be running.
+    clearInterval(intervalId);
+    this.clockRunning = false;
+  },
+  this.count = function () {
+        // in order for this to work, we need current database time, user id and timer key
+    this.time++;
+    var var2 = this.timeConverter(this.time);
+    $('#' + key).text(var2);
+  },
+  this.timeConverter = function (t) {
 
+    //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
+    let hours = Math.floor(t / 3600);
+    let newNumber = t - (hours * 60 * 60);
+    var minutes = Math.floor(newNumber / 60);
+
+    var seconds = newNumber - (minutes * 60);
+
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
+
+    if (minutes === 0) {
+      minutes = "00";
+    }
+
+
+    else if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    if (hours === 0) {
+      hours = "00";
+    }
+
+    else if (hours < 10) {
+      hours = "0" + hours;
+    }
+    return hours + ":" + minutes + ":" + seconds;
+  }
+};
 
 
 
@@ -612,7 +671,7 @@ var stopwatch = {
   start: function () {
     //  Use setInterval to start the count here and set the clock to running.
     if (!clockRunning) {
-      intervalId = setInterval(stopwatch.count, 1000);
+      intervalId = setInterval( function() {stopwatch.count('haha yellow')}, 1000);
       clockRunning = true;
     }
   },
@@ -621,27 +680,31 @@ var stopwatch = {
     clearInterval(intervalId);
     clockRunning = false;
   },
-  count: function () {
+  count: function (testy) {
 
     // in order for this to work, we need current database time, user id and timer key
 
     // current database time;
-    firebase.database().ref('user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB-CsSsAvO-XdOg0vXr/time').once('value').then(function (snapshot) {
+    firebase.database().ref('user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB3PhoUd5IvCvOzlhtm/time').once('value').then(function (snapshot) {
       var timey = parseFloat(JSON.stringify(snapshot));
       timey++;
       
       // updating firebase data
       var updates = {};
-      updates['/user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB-CsSsAvO-XdOg0vXr/time'] = timey;
+      updates['/user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB3PhoUd5IvCvOzlhtm/time'] = timey;
       firebase.database().ref().update(updates);
 
-
-
+      // if (testy) {
+        console.log(testy);
+      // }
+      
+      
 
 
     });
 
-
+    console.log('testings123');
+    
 
     // move this stopwatch time conver to the call to get the current number in the database and print this to the page
 
