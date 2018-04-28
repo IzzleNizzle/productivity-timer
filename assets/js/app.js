@@ -580,12 +580,12 @@ function printTimer(time, name, key) {
 
   // pieces of the timer object
   var timeObject = $('<div>');
-  var timeName = $('<p>' + name + '</p>');
+  var timeName = $('<p>Project Name: ' + name + '</p>');
   //this prints their current time and not just 0
   var printTime = timeObjectArr[0].timeConverter(time)
-  var time = $('<p>' + printTime + '</p>');
+  var time = $('<p>Total Time:</p>');
 
-  var totTime = $('<p>Total Time: 00:00:00</p>');
+  var totTime = $('<p>' + printTime + '</p>');
   var startButton = $('<button class="btn btn-primary">Start</button>');
   var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
 
@@ -593,11 +593,13 @@ function printTimer(time, name, key) {
   pauseButton.attr('data-attr', key);
 
   // adding class for printing to the dom
-  time.attr('id', key);
+  totTime.attr('id', key);
 
   startButton.addClass('startBtn');
   pauseButton.addClass('pauseBtn');
-
+  timeObject.addClass('col-md-2');
+  timeObject.addClass('timer');
+  time.addClass('time');
   // appending pieces together
 
   timeObject.append(timeName);

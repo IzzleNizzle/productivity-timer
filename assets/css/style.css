@@ -2,30 +2,16 @@ body {
     margin-top: 55px;
 }
 
-
-/* 640x960 iphone 4 dimensions */
-
-#timer {
-    border: solid 1px blue; 
-    width: 200px;
-    height: 200px;
-    border-radius: 150px;
+.timer {
+    border: solid 1px teal; 
+    /* width: 200px; */
+    height: 150px;
+    border-radius: 13px;
     text-align: center;
+    padding-top: 15px;
 }
 
-p {
-    margin-top: 19px;
-}
-
-#time {
+.time {
     font-weight: bold;
-    font-size: 20px;
+    /* font-size: 20px; */
 }
-/* 
-
-- Goal _______  Submit
-
-
-
-
-*/
