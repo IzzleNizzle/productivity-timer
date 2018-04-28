@@ -4,7 +4,6 @@ body {
 
 .timer {
     border: solid 1px teal; 
-    /* width: 200px; */
     height: 150px;
     border-radius: 13px;
     text-align: center;
@@ -13,5 +12,4 @@ body {
 
 .time {
     font-weight: bold;
-    /* font-size: 20px; */
 }

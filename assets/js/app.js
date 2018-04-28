@@ -99,6 +99,13 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 
 
   } else {
+
+    // if user is not logged in, redirect to home page to log in
+    if (window.location.href === "https://izzlenizzle.github.io/productivity-timer/index.html") {
+      window.location.replace("https://izzlenizzle.github.io/productivity-timer/sign-in.html");
+    }
+
+
     console.log('not logged in');
     // firebaseTest();
     // console.log(firebaseUser)
