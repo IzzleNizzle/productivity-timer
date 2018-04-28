@@ -11,8 +11,8 @@ firebase.initializeApp(config);
 //shortcut reference for firebase database
 var db = firebase.database();
 
-// storing my is as a variable because i can't figure out cors issue
-var myID = "VspYPh88CaSLRA9J4MnftYJZeY23";
+// Global array for storing timer objects
+var timeObjectArr = [];
 
 // **************************** USER AUTHENTICATION ********************************
 
@@ -68,6 +68,7 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
     console.log(firebaseUser)
     console.log("is this working?")
     console.log(firebaseUser.email)
+    console.log(user.uid + 'this is your uid');
     // console.log(firebaseUser.Kb.I)
     logOut.classList.remove("hide");
     $("#userName").text("Hi " + firebaseUser.email + "!");
@@ -80,17 +81,17 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
 
     // TODO - this is pulling data from teh database just fine. for every project that is in the database we need to load a new timer in the paused status and append it to the screen. ordered by date added is just fine
 
-    db.ref('/users/' + myID).orderByChild("dateAdded").on("child_added", function (snapshot) {
-      var sv = snapshot.val();
+    // db.ref('/users/' + myID).orderByChild("dateAdded").on("child_added", function (snapshot) {
+    //   var sv = snapshot.val();
 
-      console.log(sv.dateAdded + `date`);
-      console.log(sv.projectName + ` name`);
-    })
-
-
+    //   console.log(sv.dateAdded + `date`);
+    //   console.log(sv.projectName + ` name`);
+    // })
 
 
 
+
+    listen();
 
 
 
@@ -101,6 +102,7 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
     console.log('not logged in');
     // firebaseTest();
     // console.log(firebaseUser)
+    // links to navbar
     logOut.classList.add("hide");
     $("#userName").html("<a href='sign-in.html'>Hi! Click to Log In</a>");
   }
@@ -235,7 +237,7 @@ function shaleyIsHot() {
 
 // Modal Button Functionality for adding Project
 $("#projectSubmit").on('click', function () {
-  event.preventDefault();
+
   // capture input from  user
   let projectName = $('#projectName').val().trim();
   // create new timer unit with function
@@ -310,7 +312,7 @@ $("#projectSubmit").on('click', function () {
   //   projectName: projectName,
   //   dateAdded: firebase.database.ServerValue.TIMESTAMP
   // })
-
+  event.preventDefault();
 })
 
 
@@ -372,52 +374,71 @@ $("#accountSubmit").on("click", function () {
 //TODO - build in functionality for a key, so that this object can be referenced by the key in teh database object.
 function newTimer(name) {
 
-  // pieces of the timer object
-  var timeObject = $('<div>');
-  var timeName = $('<p>' + name + '</p>');
-  var time = $('<p>00:00:00</p>');
-  var totTime = $('<p>Total Time: 00:00:00</p>');
-  var startButton = $('<button class="btn btn-primary">Start</button>');
-  var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
+  // // pieces of the timer object
+  // var timeObject = $('<div>');
+  // var timeName = $('<p>' + name + '</p>');
+  // var time = $('<p>00:00:00</p>');
+  // var totTime = $('<p>Total Time: 00:00:00</p>');
+  // var startButton = $('<button class="btn btn-primary">Start</button>');
+  // var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
 
   //giving timer data attribute with key so it can be unique to the database item
   var newPostKey = firebase.database().ref().push().key;
 
-  startButton.attr('data-attr', newPostKey);
-  startButton.addClass('startBtn');
-  pauseButton.addClass('pauseBtn');
+  timeObjectArr.push(new Stopwatch(0, user.uid, newPostKey));
+
+  // startButton.attr('data-attr', newPostKey);
+  // pauseButton.attr('data-attr', newPostKey);
+
+  // adding class for printing to the dom
+  // time.attr('id', newPostKey);
+
+  // startButton.addClass('startBtn');
+  // pauseButton.addClass('pauseBtn');
 
   // appending pieces together
 
-  timeObject.append(timeName);
-  timeObject.append(time);
-  timeObject.append(totTime);
-  timeObject.append(startButton);
-  timeObject.append(pauseButton);
+  // timeObject.append(timeName);
+  // timeObject.append(time);
+  // timeObject.append(totTime);
+  // timeObject.append(startButton);
+  // timeObject.append(pauseButton);
 
   //create database item for the timer
-  createTimer(newPostKey, name)
+  createTimer(newPostKey, name, user.uid)
   // print timeObject to page;
-  $('#timer-fill').append(timeObject);
-  clickThis();
+  // $('#timer-fill').append(timeObject);
+  // clickThis();
 }
 
 //testing button THIS functionality
 function clickThis() {
+  // var newStop = new Stopwatch(0, user.uid, $(this).attr('data-attr'));
   $('.startBtn').on('click', function () {
     console.log($(this).attr('data-attr'));
     console.log('test');
 
+    //find out what object to work with
+    for (i = 0; i < timeObjectArr.length; i++) {
+      if (timeObjectArr[i].key === $(this).attr('data-attr')){
+        timeObjectArr[i].start();
+      }
+    }
 
   })
+    $('.pauseBtn').on('click', function() {
+    console.log($(this).attr('data-attr'));
+    console.log('test');
+    //find out what object to work with
+    for (i = 0; i < timeObjectArr.length; i++) {
+      if (timeObjectArr[i].key === $(this).attr('data-attr')){
+        timeObjectArr[i].stop();
+      }
+    }
 
-  //TODO FUNCTIONALITY FOR PAUSE BUTTON
-  // $('.pauseBtn').on('click', function() {
-  //   console.log($(this).attr('data-attr'));
-  //   console.log('test');
+  })
+  
 
-
-  // })
 
 }
 
@@ -430,13 +451,13 @@ function clickThis() {
 
 
 
-function createTimer(postKey, timerName) {
+function createTimer(postKey, timerName, userId) {
 
   //first thing is to write data
 
   // update it by referencing the key
 
-  var newTimer = {
+  var aTimer = {
     time: 0,
     projectName: timerName,
     key: postKey,
@@ -448,15 +469,15 @@ function createTimer(postKey, timerName) {
 
   // Write the new post's data simultaneously in the posts list and the user's post list.
   var updates = {};
-  // updates['/timers/' + postKey] = newTimer;
-  updates['/user-timers/' + myID + '/' + postKey] = newTimer;
+  // updates['/timers/' + postKey] = aTimer;
+  updates['/user-timers/' + userId + '/' + postKey] = aTimer;
 
   firebase.database().ref().update(updates);
 
 
   //   //secondly i'm going to need to read from the database
 
-  //   // create listener to catch changes in the database
+  // //   // create listener to catch changes in the database
   //   db.ref('/user-timers/' + myID + '/').orderByChild('dateAdded').on("child_added", function (snapshot) {
   //     // Variable to store response from database
   //     var sv = snapshot.val();
@@ -477,7 +498,7 @@ function createTimer(postKey, timerName) {
 
 
   // // create listener to catch changes in the database
-  // db.ref('/user-timers/' + myID + '/').orderByKey().on("child_added", function(snapshot) {
+  // db.ref('/user-timers/' + user.uid + '/').orderByKey().on("child_added", function(snapshot) {
   //   // Variable to store response from database
   //   var sv = snapshot.val();
 
@@ -527,6 +548,26 @@ function createTimer(postKey, timerName) {
 
 
 
+function listen() {
+  //   // create listener to catch changes in the database
+  db.ref('/user-timers/' + user.uid + '/').orderByChild('dateAdded').on("child_added", function (snapshot) {
+    // Variable to store response from database
+    var sv = snapshot.val();
+
+  // console.log(JSON.stringify(sv.key) + 'reading database test');
+  // console.log(sv.dateAdded + ' reading by key database test');
+  // console.log(sv.time + sv.key + ' reading by key database test');
+  // console.log(sv.key + ' key');
+
+  // i don't need to build new timers for each of the items, but i do send each timer's information to be constructed ))) time, uid, key
+  timeObjectArr.push(new Stopwatch(sv.time, user.uid, sv.key))
+
+  //so i can't send this informaiton to create new timers eveyr time, i'll need a similar function that will just print thei nformaiotn to the page
+    printTimer(sv.time, sv.projectName, sv.key);
+});
+  
+
+}
 
 
 
@@ -535,9 +576,40 @@ function createTimer(postKey, timerName) {
 
 
 
+function printTimer(time, name, key) {
 
+  // pieces of the timer object
+  var timeObject = $('<div>');
+  var timeName = $('<p>' + name + '</p>');
+  //this prints their current time and not just 0
+  var printTime = timeObjectArr[0].timeConverter(time)
+  var time = $('<p>' + printTime + '</p>');
 
+  var totTime = $('<p>Total Time: 00:00:00</p>');
+  var startButton = $('<button class="btn btn-primary">Start</button>');
+  var pauseButton = $('<button class="btn btn-secondary">Pause</button>');
 
+  startButton.attr('data-attr', key);
+  pauseButton.attr('data-attr', key);
+
+  // adding class for printing to the dom
+  time.attr('id', key);
+
+  startButton.addClass('startBtn');
+  pauseButton.addClass('pauseBtn');
+
+  // appending pieces together
+
+  timeObject.append(timeName);
+  timeObject.append(time);
+  timeObject.append(totTime);
+  timeObject.append(startButton);
+  timeObject.append(pauseButton);
+
+  // print timeObject to page;
+  $('#timer-fill').append(timeObject);
+  clickThis();
+}
 
 
 
@@ -572,7 +644,7 @@ function createTimer(postKey, timerName) {
 
 $('#start-button').on('click', function () {
 
-  var newTimer = new Stopwatch(0, myID, $(this).attr('data-attr'));
+  // var newTimer = new Stopwatch(0, "VspYPh88CaSLRA9J4MnftYJZeY23", $(this).attr('data-attr'));
 
 });
 
@@ -587,9 +659,9 @@ $('#pause-button').on('click', function () {
 
 
 
-
-
 function Stopwatch (time, uid, key) {
+  this.key = key,
+  this.intervalId,
   this.clickRunning = false,
   this.time = time,
   this.reset = function () {
@@ -600,21 +672,32 @@ function Stopwatch (time, uid, key) {
   this.start = function () {
     //  Use setInterval to start the count here and set the clock to running.
     if (!this.clockRunning) {
-      intervalId = setInterval( this.count(), 1000);
+      // in order for setInterval to work in this constructor I needed to make a reference to this.
+      var that = this;
+      this.intervalId = setInterval( function () {that.count()}, 1000);
       this.clockRunning = true;
-      console.log('start function');
-      
     }
   },
   this.stop = function () {
     //  Use clearInterval to stop the count here and set the clock to not be running.
-    clearInterval(intervalId);
+    clearInterval(this.intervalId);
     this.clockRunning = false;
   },
   this.count = function () {
-        // in order for this to work, we need current database time, user id and timer key
+    // in order for this to work, we need current database time, user id and timer key
     this.time++;
     var var2 = this.timeConverter(this.time);
+
+      // updating firebase data
+      var updates = {};
+      updates['/user-timers/' + uid + '/' + key + '/time'] = this.time;
+      firebase.database().ref().update(updates);
+
+
+
+    // until i can get dom set up to manipulate, i will just console log the current time.
+    console.log(var2);
+    
     $('#' + key).text(var2);
   },
   this.timeConverter = function (t) {
@@ -652,114 +735,103 @@ function Stopwatch (time, uid, key) {
 
 
 
+// for testing, comment out while you run code;
+// var newTimer = new Stopwatch(0, "VspYPh88CaSLRA9J4MnftYJZeY23", "-LB3nN2oCCQxCHi2OIG4");
 
 
 
 
-// Importing timer object
-var clockRunning = false;
 
-// Create a timer for the game to run by
-var stopwatch = {
-  time: 0,
-  reset: function () {
-    // Stop's timer and sets time to zero, as well as prints beginning to the page
-    stopwatch.stop();
-    stopwatch.time = 0;
-    $('#time').text("00:00:00");
-  },
-  start: function () {
-    //  Use setInterval to start the count here and set the clock to running.
-    if (!clockRunning) {
-      intervalId = setInterval( function() {stopwatch.count('haha yellow')}, 1000);
-      clockRunning = true;
-    }
-  },
-  stop: function () {
-    //  Use clearInterval to stop the count here and set the clock to not be running.
-    clearInterval(intervalId);
-    clockRunning = false;
-  },
-  count: function (testy) {
+// // Importing timer object
+// var clockRunning = false;
 
-    // in order for this to work, we need current database time, user id and timer key
+// // Create a timer for the game to run by
+// var stopwatch = {
+//   time: 0,
+//   reset: function () {
+//     // Stop's timer and sets time to zero, as well as prints beginning to the page
+//     stopwatch.stop();
+//     stopwatch.time = 0;
+//     $('#time').text("00:00:00");
+//   },
+//   start: function () {
+//     //  Use setInterval to start the count here and set the clock to running.
+//     if (!clockRunning) {
+//       intervalId = setInterval( function() {stopwatch.count('haha yellow')}, 1000);
+//       clockRunning = true;
+//     }
+//   },
+//   stop: function () {
+//     //  Use clearInterval to stop the count here and set the clock to not be running.
+//     clearInterval(intervalId);
+//     clockRunning = false;
+//   },
+//   count: function (testy) {
 
-    // current database time;
-    firebase.database().ref('user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB3PhoUd5IvCvOzlhtm/time').once('value').then(function (snapshot) {
-      var timey = parseFloat(JSON.stringify(snapshot));
-      timey++;
+//     // in order for this to work, we need current database time, user id and timer key
+
+//     // current database time;
+//     firebase.database().ref('user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB3PhoUd5IvCvOzlhtm/time').once('value').then(function (snapshot) {
+//       var timey = parseFloat(JSON.stringify(snapshot));
+//       timey++;
       
-      // updating firebase data
-      var updates = {};
-      updates['/user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB3PhoUd5IvCvOzlhtm/time'] = timey;
-      firebase.database().ref().update(updates);
+//       // updating firebase data
+//       var updates = {};
+//       updates['/user-timers/VspYPh88CaSLRA9J4MnftYJZeY23/-LB3PhoUd5IvCvOzlhtm/time'] = timey;
+//       firebase.database().ref().update(updates);
 
-      // if (testy) {
-        console.log(testy);
-      // }
+//       // if (testy) {
+//         console.log(testy);
+//       // }
       
       
 
 
-    });
+//     });
 
-    console.log('testings123');
+//     console.log('testings123');
     
 
-    // move this stopwatch time conver to the call to get the current number in the database and print this to the page
+//     // move this stopwatch time conver to the call to get the current number in the database and print this to the page
 
 
-    stopwatch.time++;
-    // TODO - assign time to firebase database for network storage.
-    var var2 = stopwatch.timeConverter(stopwatch.time);
-    $('#time').text(var2);
+//     stopwatch.time++;
+//     // TODO - assign time to firebase database for network storage.
+//     var var2 = stopwatch.timeConverter(stopwatch.time);
+//     $('#time').text(var2);
 
-  },
-  timeConverter: function (t) {
+//   },
+//   timeConverter: function (t) {
 
-    //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
-    let hours = Math.floor(t / 3600);
-    let newNumber = t - (hours * 60 * 60);
-    var minutes = Math.floor(newNumber / 60);
+//     //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
+//     let hours = Math.floor(t / 3600);
+//     let newNumber = t - (hours * 60 * 60);
+//     var minutes = Math.floor(newNumber / 60);
 
-    var seconds = newNumber - (minutes * 60);
+//     var seconds = newNumber - (minutes * 60);
 
-    if (seconds < 10) {
-      seconds = "0" + seconds;
-    }
+//     if (seconds < 10) {
+//       seconds = "0" + seconds;
+//     }
 
-    if (minutes === 0) {
-      minutes = "00";
-    }
-
-
-    else if (minutes < 10) {
-      minutes = "0" + minutes;
-    }
-
-    if (hours === 0) {
-      hours = "00";
-    }
-
-    else if (hours < 10) {
-      hours = "0" + hours;
-    }
-    console.log(seconds, minutes, hours);
-
-    return hours + `:` + minutes + ":" + seconds;
-  }
-};
-
-// TO-Do's
-// every second save time to firebase for network storage
-// save second variable, link it to the day that you started the timer
-// be able to work with multiple days and count the total time for timer
+//     if (minutes === 0) {
+//       minutes = "00";
+//     }
 
 
+//     else if (minutes < 10) {
+//       minutes = "0" + minutes;
+//     }
 
+//     if (hours === 0) {
+//       hours = "00";
+//     }
 
+//     else if (hours < 10) {
+//       hours = "0" + hours;
+//     }
+//     console.log(seconds, minutes, hours);
 
-
-// add functionality for add project button for naming and such
-// on click function that starts timer and stops it as well
-// network listener looks for project opened by user and pulls time if they have a project.
+//     return hours + `:` + minutes + ":" + seconds;
+//   }
+// };
