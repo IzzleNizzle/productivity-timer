@@ -587,7 +587,7 @@ function printTimer(time, name, key) {
 
   // pieces of the timer object
   var timeObject = $('<div>');
-  var timeName = $('<p>Project Name: ' + name + '</p>');
+  var timeName = $('<p>' + name + '</p>');
   //this prints their current time and not just 0
   var printTime = timeObjectArr[0].timeConverter(time)
   var time = $('<p>Total Time:</p>');
