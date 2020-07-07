@@ -3,6 +3,7 @@ import './App.css';
 import TopTime from './components/TopTime'
 import StatusBar from './components/StatusBar'
 import MiniDash from './components/MiniDash'
+import Activities from './components/Activities'
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <TopTime />
       <StatusBar />
       <MiniDash />
+      <Activities />
     </div>
   );
 }
