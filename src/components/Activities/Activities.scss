@@ -1,0 +1,23 @@
+section.activities {
+  padding: 15px 20px;
+  background-color: rgb(35, 87, 137);
+  color: white;
+
+  .activity-copy {
+    padding: 15px 0px;
+  }
+
+  .activity-buttons {
+    padding: 15px 0px;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 15px;
+    font-size: 24px;
+
+    button.activity {
+      padding: 20px 5px;
+      background-color: rgb(253, 255, 252);
+      border-color: #7b7bff57;
+    }
+  }
+}
