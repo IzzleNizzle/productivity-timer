@@ -1,0 +1,25 @@
+section.top-time {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: rgb(21, 25, 37);
+  
+    .top-left-icon {
+      svg {
+        color: white;
+        font-size: 50px;
+      }
+    }
+  
+    .main-time-container {
+      text-align: right;
+      p:first-child {
+        color: white;
+        font-size: 36px;
+      }
+      p:last-child {
+        color: gold;
+        font-size: 24px;
+      }
+    }
+  }
