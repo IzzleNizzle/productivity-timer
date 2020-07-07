@@ -1,11 +1,13 @@
 import React from 'react';
-import TopTime from './components/TopTime'
 import './App.css';
+import TopTime from './components/TopTime'
+import StatusBar from './components/StatusBar'
 
 function App() {
   return (
     <div className="container">
       <TopTime />
+      <StatusBar />
     </div>
   );
 }
